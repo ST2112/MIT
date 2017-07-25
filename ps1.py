@@ -108,7 +108,7 @@ def brute_force_cow_transport(cows,limit=10):
     # TODO: Your code here
     optimalPartition = []
     optimalNumShipments = len(cows) + 1 #we assume any acceptable partition will do no worse than one cow per shipment
-    
+    cowNames = cows.keys()
     #march through all possible partitions
     for thisPartition in (get_partitions(cowNames)):
         #start counting subsets (representing shipments) in this partition
