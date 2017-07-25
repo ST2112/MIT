@@ -106,7 +106,38 @@ def brute_force_cow_transport(cows,limit=10):
     trips
     """
     # TODO: Your code here
-    pass
+    optimalPartition = []
+    optimalNumShipments = len(cows) + 1 #we assume any acceptable partition will do no worse than one cow per shipment
+    
+    #march through all possible partitions
+    for thisPartition in (get_partitions(cowNames)):
+        #start counting subsets (representing shipments) in this partition
+        numShipments = 0
+        reject_partition = False
+        #examine each subset. Determine its weight, and if > capacity, 
+        #break out of all inner loops and fetch another partition. 
+        #Otherwise, increment the shipment count for later comparison to optimality.
+        for shipment in thisPartition:
+            #start count, start tare 
+             numShipments += 1
+             shipmentWeight = 0
+             for cow in shipment:
+                 shipmentWeight += cows[cow]
+                 #break out of here if this attempted shipment exceeds capacity
+                 if shipmentWeight > limit:
+                     reject_partition = True
+                     break
+             #no need to continue through this partition if we've rejected a shipment 
+             #in the partition
+             if reject_partition:
+                 break
+        #if we made it through the entire outer for-loop (considered all subsets in this partition)
+        #without rejecting, then the partition is a candidate for the optimal one.  Therefore consider
+        #the number of subsets in the partition.
+        if not reject_partition and (numShipments < optimalNumShipments):
+            optimalPartition = thisPartition
+            optimalNumShipments = numShipments
+    return optimalPartition
 
         
 # Problem 3
