@@ -54,32 +54,60 @@ def greedy_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
-    copyCows = {}
-    sortedVals = sorted(cows.values(), reverse=True)
-    for val in sortedVals:
-        for cow in cows:
-            if cows[cow] == val and cow not in copyCows:
-                copyCows[cow] = val
-                
-    shipments = []
-    shippedNames = []
     
-    while len(shippedNames) < len(copyCows): #until we have shipped all cows
-        thisShipment = [] #start with an empty shipment
-        remainingCap = limit  #empty shipment means full capacity (limit)
+    shipments = [] #our list of lists
+    numCows = len(cows)
+    #keep track of which cows are in a shipment
+    cowsShipped = []
+
+    #go until all cows are on the shipped list
+    while len(cowsShipped) < numCows:
+        thisShipment = []  #begin with an empty shipment, weighing 0, full cap.
+        thisShipWeight = 0
+        remainingLimit = limit
+
         
-        
-        for cow in copyCows: #dict values are descending, so march down
-            if copyCows[cow] <= remainingCap and cow not in shippedNames: #we have a winner
-                thisShipment.append(cow) #put the cow on the shipment
-                remainingCap -= copyCows[cow] #deduct the weight from the capacity
-                shippedNames.append(cow) #take the cow out of consideration
+        shipmentFull = False #a shipment is full when no more cows in the 
+        #dictionary can be put aboard (note the shipment may not be entirely
+        #full -- it simply doesn't have room for any more of our cows.)
+
+        #start filling the shipment, go until as full as possible
+        while not shipmentFull:
+            #look for the heaviest cow that isn't already on a shipment (in 
+            #the shipped list) but which is still under the remaining capacity.
+            #Note: this is the "greedy" part
+            
+            #at the start of our search, we have identified no cow
+            candidate = None
+            heaviestUnderLimit = 0
+            
+            #look at every cow
+            for cow in cows:
+                #get cow's weight into a variable, since we use this several 
+                #times in calculations
+                thisCowWeight = cows[cow]
+                if thisCowWeight <= remainingLimit and\
+                   thisCowWeight > heaviestUnderLimit and\
+                   cow not in cowsShipped:
+                    candidate = cow
+                    heaviestUnderLimit = thisCowWeight
                     
-        shipments.append(thisShipment) 
-         
-    return(shipments)
-                    
+            #if we get to the end of the list and still haven't identified
+            #a candidate that meets all desired conditions, then the shipment
+            #must be full, so get out of the inner while-loop and start again
+            #on the outer while.
+            if candidate == None:
+                shipmentFull = True
+            else:
+                #put cow aboard and deduct the weight from the shipment's 
+                #capacity
+                thisShipment.append(candidate)
+                remainingLimit -= heaviestUnderLimit
+                cowsShipped.append(candidate)
+
+        shipments.append(thisShipment)
+
+    return shipments                
                     
                 
 
